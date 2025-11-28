@@ -26,7 +26,7 @@ else:
   print(f'Error: {response.status_code}')
 
 # saving data in a better structured format
-  current_rate = data['conversion_rate']
+current_rate = data['conversion_rate']
 exchange_data = {
     'date' : datetime.now().strftime('%Y-%m-%d'),
     'time' : datetime.now().strftime('%H:%M:%S'),
