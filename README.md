@@ -17,26 +17,23 @@ A production-ready data pipeline that extracts, validates, and processes exchang
 #### **Current Features:**
 
 **Data Extraction:**
+- ✅ Multi-currency support (7 currencies: NGN, EUR, GBP, CNY, JPY, ZAR, GHS)
 - ✅ Real-time API integration (ExchangeRate-API)
-- ✅ Multi-currency support (7 currencies)
-- ✅ Automated data retrieval with timeout handling
-
-**Data Processing:**
-- ✅ Structured with modular functions
+- ✅ Robust error handling (timeouts, connection errors, API failures)
 - ✅ Data validation and sanity checks
-- ✅ Error handling (connection errors, timeouts, invalid data)
-- ✅ Pandas DataFrame processing
 
 **Data Storage:**
+- ✅ SQLite database integration
+- ✅ Automatic duplicate prevention
+- ✅ Historical data tracking
 - ✅ CSV export with timestamps
-- ✅ Structured data format for analysis
 
 **Code Quality:**
-- ✅ Professional documentation
-- ✅ Clean code architecture
-- ✅ Reusable functions
-- ✅ Comprehensive error messages
-
+- ✅ Modular function architecture
+- ✅ Professional error messages
+- ✅ Comprehensive documentation
+- ✅ Reusable, production-ready code
+- 
 #### **Currencies Tracked:**
 - Nigerian Naira (NGN)
 - Euro (EUR)
@@ -50,7 +47,6 @@ A production-ready data pipeline that extracts, validates, and processes exchang
 Python • Requests • Pandas • ExchangeRate-API
 
 #### **Next Phase (Coming Soon):**
-- SQLite database integration for historical data
 - Data visualization (matplotlib/plotly)
 - Automated scheduling (daily runs)
 - REST API wrapper
@@ -64,9 +60,9 @@ Python • Requests • Pandas • ExchangeRate-API
 - Day 1: Repository setup, initial structure
 - Day 2: Basic USD/NGN extraction working
 - Day 3: Multi-currency support + robust error handling
+- Day 4: sqlite database sstorage + duplicate prevention
 
 **Coming Next:**
-- Day 4: SQLite database integration
 - Day 5: Data visualization
 - Week 2: Project 2 (TBD)
 
