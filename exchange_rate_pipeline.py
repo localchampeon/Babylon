@@ -1,19 +1,3 @@
-# Nigerian Exchange Rate Data Pipeline
-# Project Start: November 26, 2025
-# By: Abubakar Yahya Ibrahim
-
-print("🚀 Babylon Data Engineering Portfolio")
-print("=" * 50)
-print("Day 1: Building my path from $2,500 to $50,000+")
-print("Project 1: Nigerian Exchange Rate Pipeline")
-print("=" * 50)
-
-#import necessary libraries
-import requests
-import json
-from datetime import datetime
-import pandas as pd
-
 """
 Babylon Exchange Rate Pipeline - Version 2.0
 Multi-Currency Support with Error Handling
@@ -25,6 +9,8 @@ import requests
 import json
 import pandas as pd
 from datetime import datetime
+import  sqlite3
+
 
 #============================================== CONFIGURATION ==================================== ❌
 API_KEY = 'e33490198a92a1c1bf75950d'
@@ -106,6 +92,8 @@ def extract_currency_data(api_response, currency_dict):
   rates = api_response.get('conversion_rates', {})
   base_currency = api_response.get('base_code','USD')
   time_stamp = datetime.now()
+  # Convert to ISO 8601 string
+  time_stamp = time_stamp.isoformat()
 
   for code, name in currency_dict.items():
     rate = rates.get(code)
@@ -115,7 +103,7 @@ def extract_currency_data(api_response, currency_dict):
           'timestamps': time_stamp,
           'date': datetime.now().strftime('%Y-%m-%d'),
           'time': datetime.now().strftime('%H:%M:%S'),
-          'base_currnecy' : api_response.get('base-code','USD'),
+          'base_currency' : api_response.get('base-code','USD'),
           'target_currency': code,
           'currency_name' : name,
           'exchange_rate' : rate,
@@ -163,7 +151,8 @@ def print_summary(dataframe):
   print("📊 EXCHANGE RATE SUMMARY - BABYLON PIPELINE")
   print("="*60)
 
-  base = df['base_currency'].iloc[0]
+
+  base = dataframe.loc[0,'base_currency']
 
   for _,row in dataframe.iterrows():
     rate_str = f"{row['exchange_rate']}".rjust(15)
@@ -174,6 +163,84 @@ def print_summary(dataframe):
   print(f"Source : {dataframe['source'].iloc[0]}")
   print("=" * 60 + "\n")
 
+def create_table():
+  '''
+  creates table in the db by executing sql commands
+  columns as available in the csv file.
+  '''
+  #connect to data base and create a db file if it doesn't exists
+  conn = sqlite3.connect('babylon_exchange_rates.db')
+  cursor = conn.cursor()
+  cursor.execute('''
+      CREATE TABLE IF NOT EXISTS exchange_rates
+      (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamps TEXT,
+        date TEXT,
+        time TEXT,
+        base_currency TEXT,
+        target_currency TEXT,
+        currency_name TEXT,
+        exchange_rate REAL,
+        source TEXT,
+        api_update_time TEXT,
+        UNIQUE(date, target_currency)
+      )
+  ''')
+  conn.commit()
+  conn.close()
+  print("✅ exchange_rates table succesfully created")
+  return
+
+#inserting exchange rate data into the table
+def save_to_database(dataframe: DataFrame):
+  '''
+  inserts the exchange rates data in dataframe format into the db
+  args:
+  dataframe: file to be stored in table
+  '''
+  # SQL with INSERT OR IGNORE to skip duplicates
+  try:
+    #convert dataframe to list of tuples
+    data_tuples = dataframe[[
+            'timestamps','date', 'time', 'base_currency', 'target_currency',
+            'currency_name', 'exchange_rate', 'source', 'api_update_time'
+        ]].values.tolist()
+
+    conn = sqlite3.connect('babylon_exchange_rates.db')
+    cursor = conn.cursor()
+
+    insert_sql = '''
+        INSERT OR IGNORE INTO exchange_rates
+        (timestamps, date, time, base_currency, target_currency, currency_name,
+        exchange_rate, source, api_update_time)
+        VALUES(?,?,?,?,?,?,?,?,?)
+        '''
+    conn.executemany(insert_sql, data_tuples)
+    conn.commit()
+    conn.close()
+    rows_affected = cursor.rowcount
+    print(f"✅ Database updated: {rows_affected} new records added")
+
+  except sqlite3.Error as e:
+        print(f"❌ Database error: {e}")
+  except Exception as e:
+        print(f"❌ Error: {e}")
+  return
+
+def select_test():
+  '''
+  functions tries to pull data from db to check if previous ops were
+  successful
+  '''
+  conn = sqlite3.connect('babylon_exchange_rates.db')
+
+  query = 'SELECT * FROM exchange_rates ORDER BY date DESC'
+  df = pd.read_sql_query(query, conn)
+
+  conn.commit()
+  conn.close()
+  return df
 
 def main():
   """
@@ -183,6 +250,7 @@ def main():
   print("=" * 60)
   print(f"⏰ Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
   print("=" * 60 + "\n")
+
 
   #Fetch data from API
   api_data = fetch_fx_rates(API_KEY)
@@ -209,8 +277,18 @@ def main():
   print("✅ Pipeline completed successfully!")
   print(f"🎯 Processed {len(df)} currency pairs\n")
 
+  #create table
+  create_table()
+
+  #insert data into table
+  save_to_database(df)
+
+  #test whether succesful with select
+  df = select_test()
+
   return df
 
 
 if __name__ == "__main__":
     result_df = main()
+result_df
