@@ -10,70 +10,43 @@ Data Engineer with Economics background, building data pipelines and business in
 ### 1. Multi-Currency Exchange Rate Pipeline
 **Status:** ✅ Phase 2 Complete  
 **Started:** November 26, 2025  
-**Last Updated:** November 28, 2025
+**Last Updated:** December 1, 2025
 
-A production-ready data pipeline that extracts, validates, and processes exchange rate data for multiple currencies relevant to Nigerian and African business.
+## Babylon - Exchange Rate Data Pipeline
 
-#### **Current Features:**
+**Status:** ✅ PROJECT 1 COMPLETE  
+**Duration:** Week 1 (Nov 26 - Dec 1, 2025)
 
-**Data Extraction:**
-- ✅ Multi-currency support (7 currencies: NGN, EUR, GBP, CNY, JPY, ZAR, GHS)
+### Completed Features:
+
+**Data Collection:**
 - ✅ Real-time API integration (ExchangeRate-API)
-- ✅ Robust error handling (timeouts, connection errors, API failures)
-- ✅ Data validation and sanity checks
+- ✅ Multi-currency support (7 currencies: NGN, EUR, GBP, CNY, JPY, ZAR, GHS)
+- ✅ Robust error handling and validation
+- ✅ Automated weekday-only data collection
 
 **Data Storage:**
 - ✅ SQLite database integration
-- ✅ Automatic duplicate prevention
-- ✅ Historical data tracking
-- ✅ CSV export with timestamps
+- ✅ Duplicate prevention (UNIQUE constraints)
+- ✅ Historical data tracking (10+ days)
+- ✅ CSV export functionality
+
+**Data Visualization:**
+- ✅ Interactive Plotly charts
+- ✅ Single currency trend analysis
+- ✅ Multi-currency comparisons
+- ✅ Exportable HTML visualizations
 
 **Code Quality:**
 - ✅ Modular function architecture
-- ✅ Professional error messages
-- ✅ Comprehensive documentation
-- ✅ Reusable, production-ready code
-- 
-#### **Currencies Tracked:**
-- Nigerian Naira (NGN)
-- Euro (EUR)
-- British Pound (GBP)
-- Chinese Yuan (CNY)
-- Japanese Yen (JPY)
-- South African Rand (ZAR)
-- Ghanaian Cedi (GHS)
+- ✅ Professional documentation
+- ✅ Error handling throughout
+- ✅ Production-ready code
 
-#### **Tech Stack:**
-Python • Requests • Pandas • ExchangeRate-API
+**Tech Stack:** Python • Requests • Pandas • SQLite • Plotly • ExchangeRate-API
 
-#### **Next Phase (Coming Soon):**
-- Data visualization (matplotlib/plotly)
-- Automated scheduling (daily runs)
-- REST API wrapper
-- Web dashboard
-
----
-
-## Development Progress
-
-**Week 1:**
-- Day 1: Repository setup, initial structure
-- Day 2: Basic USD/NGN extraction working
-- Day 3: Multi-currency support + robust error handling
-- Day 4: sqlite database sstorage + duplicate prevention
-
-**Coming Next:**
-- Day 5: Data visualization
-- Week 2: Project 2 (TBD)
-
----
-
-## Contact & Links
-
-Building in public. Follow my journey from $2,500/year to $50,000+.
-
-**GitHub:** [github.com/localchampeon/Babylon](https://lnkd.in/draNXdtJ)
-
----
-
-*Last updated: November 28, 2025*
+### Project Stats:
+- 📅 Duration: 6 days
+- 📊 Data Points: 70+ exchange rate records
+- 📈 Visualizations: Interactive Plotly charts
+- 🗄️ Database: SQLite with duplicate prevention
