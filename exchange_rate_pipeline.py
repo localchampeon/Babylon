@@ -2,7 +2,7 @@
 Babylon Exchange Rate Pipeline - Version 2.0
 Multi-Currency Support with Error Handling
 Author: Don Data (Abubakar Yahya Ibrahim)
-Date: November 28, 2025
+Date: december 1, 2025
 """
 #importing relevant libraries
 import requests
@@ -10,7 +10,9 @@ import json
 import pandas as pd
 from datetime import datetime
 import  sqlite3
-
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import plotly.express as px
 
 #============================================== CONFIGURATION ==================================== ❌
 API_KEY = 'e33490198a92a1c1bf75950d'
@@ -19,11 +21,10 @@ BASE_URL = f'https://v6.exchangerate-api.com/v6/{API_KEY}/latest/USD'
 #CURRENCIES IMPORTANT FOR NIGERIAN BUSINESSES
 currencies = {
     'NGN':'Nigerian Naira',
+    'CNY':'Chinese Yuan',
     'EUR':'Euro',
     'GBP':'British Pounds',
-    'CNY':'Chinese Yuan',
-    'ZAR':'South African Rand',
-    'GHS':'Ghanian Cedi'
+    'ZAR':'South African Rand'
 }
 
 #================================= funcions ========================
@@ -193,7 +194,7 @@ def create_table():
   return
 
 #inserting exchange rate data into the table
-def save_to_database(dataframe: DataFrame):
+def save_to_database(dataframe):
   '''
   inserts the exchange rates data in dataframe format into the db
   args:
@@ -228,7 +229,7 @@ def save_to_database(dataframe: DataFrame):
         print(f"❌ Error: {e}")
   return
 
-def select_test():
+def query():
   '''
   functions tries to pull data from db to check if previous ops were
   successful
@@ -241,6 +242,76 @@ def select_test():
   conn.commit()
   conn.close()
   return df
+
+# get data from database into dataframe
+def pull_data():
+  '''
+  functions pulls data from db to check for for further processing
+  successful.
+  '''
+  conn = sqlite3.connect('babylon_exchange_rates.db')
+
+  query = 'SELECT * FROM exchange_rates ORDER BY date DESC'
+  df = pd.read_sql_query(query, conn)
+
+  conn.commit()
+  conn.close()
+  return df
+
+def line_graph(data = pull_data()):
+  '''
+  takes returned data from pull_data function as input and isolate each currency pair.
+  it then graphs the USDNGN pair.
+  args:
+  data: dataframe returned from pull_data
+  '''
+  #convert to similar date format
+  data['data'] = pd.to_datetime(data['date'], format=('%Y-%m-%d'))
+  #get unique currency codes
+  currencies = data['target_currency'].unique()
+  fig = make_subplots(
+      rows=2, cols = 3, subplot_titles= [f'USD to {curr}' for curr in currencies],
+      vertical_spacing = 0.12, horizontal_spacing = 0.10
+      )
+
+  # Add each currency to its subplot
+  for i, currency in enumerate(currencies):
+    row = (i // 3) + 1  # Which row (1, 2, or 3)
+    col = (i % 3) + 1   # Which column (1, 2, or 3)
+    
+    # Filter data for this currency
+    currency_data = data[data['target_currency'] == currency]
+    
+    # Add trace
+    fig.add_trace(
+        go.Scatter(
+            x=currency_data['date'],
+            y=currency_data['exchange_rate'],
+            mode='lines+markers',
+            name=currency,
+            showlegend=False  # Turn off legend (titles show currency)
+        ),
+        row=row,
+        col=col
+    )
+  fig.update_layout(
+    height=900,  # Tall enough to see all
+    title_text="Babylon Exchange Rate Tracker - All Currencies",
+    showlegend=False
+  )
+
+  # Update all x-axes
+  fig.update_xaxes(title_text="Date")
+
+  # Update all y-axes
+  fig.update_yaxes(title_text="Rate")
+
+  fig.show()
+  fig.write_html('babylon_exchange_rates.html')
+
+
+  
+  return
 
 def main():
   """
@@ -284,9 +355,11 @@ def main():
   save_to_database(df)
 
   #test whether succesful with select
-  df = select_test()
+  df = query()
 
-  return df
+  line_graph()
+
+  return 
 
 
 if __name__ == "__main__":
